@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getWorkouts } from "./lib/api";
-import WorkoutCard from "./components/WorkoutCard";
+import LibrarySection from "./components/LibrarySection";
 
 export default async function HomePage() {
   const workouts = await getWorkouts();
@@ -45,21 +45,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Library */}
-      <section id="library" className="mt-16 scroll-mt-20">
-        <h2 className="font-display font-bold uppercase text-2xl md:text-3xl mb-2">
-          The Library
-        </h2>
-        <p className="text-[var(--muted)] text-sm mb-8">
-          Twelve lifts covering every major muscle group.
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {workouts.map((workout) => (
-            <WorkoutCard key={workout.id} workout={workout} />
-          ))}
-        </div>
-      </section>
+      <LibrarySection workouts={workouts} />
     </div>
   );
 }
