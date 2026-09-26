@@ -11,7 +11,8 @@ import { Workout } from "../lib/api";
 
 export type PlanItem = Workout & { done?: boolean };
 
-type Toast = { id: number; message: string };
+type ToastType = "success" | "error";
+type Toast = { id: number; message: string; type: ToastType };
 
 type PlanContextType = {
   plan: PlanItem[];
@@ -20,11 +21,11 @@ type PlanContextType = {
   addToSaved: (workout: Workout) => void;
   removeFromPlan: (id: number) => void;
   removeFromSaved: (id: number) => void;
-  markAsDone: (id: number) => void;
+  markAsDone: (id: number, list: "plan" | "saved") => void;
   isInPlan: (id: number) => boolean;
   isInSaved: (id: number) => boolean;
   toasts: Toast[];
-  showToast: (message: string) => void;
+  showToast: (message: string, type?: ToastType) => void;
   PLAN_CAP: number;
 };
 
@@ -38,7 +39,6 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  // Load from localStorage on first mount
   useEffect(() => {
     try {
       const storedPlan = localStorage.getItem("fitlog_plan");
@@ -51,7 +51,6 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
-  // Persist to localStorage whenever plan/saved change (after initial load)
   useEffect(() => {
     if (hydrated) localStorage.setItem("fitlog_plan", JSON.stringify(plan));
   }, [plan, hydrated]);
@@ -60,9 +59,9 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     if (hydrated) localStorage.setItem("fitlog_saved", JSON.stringify(saved));
   }, [saved, hydrated]);
 
-  function showToast(message: string) {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message }]);
+  function showToast(message: string, type: ToastType = "success") {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3000);
@@ -78,11 +77,11 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
   function addToPlan(workout: Workout) {
     if (isInPlan(workout.id)) {
-      showToast("Already in today's plan");
+      showToast("Already in your plan", "error");
       return;
     }
     if (plan.length >= PLAN_CAP) {
-      showToast("Today's plan is full (5 lifts max)");
+      showToast("Today's plan is full (5 lifts max)", "error");
       return;
     }
     setPlan((prev) => [...prev, { ...workout, done: false }]);
@@ -91,10 +90,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
   function addToSaved(workout: Workout) {
     if (isInSaved(workout.id)) {
-      showToast("Already saved");
+      showToast("Already saved", "error");
       return;
     }
-    setSaved((prev) => [...prev, { ...workout }]);
+    setSaved((prev) => [...prev, { ...workout, done: false }]);
     showToast("Saved for later");
   }
 
@@ -108,10 +107,16 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     showToast("Removed from saved");
   }
 
-  function markAsDone(id: number) {
-    setPlan((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, done: true } : w))
-    );
+  function markAsDone(id: number, list: "plan" | "saved") {
+    if (list === "plan") {
+      setPlan((prev) =>
+        prev.map((w) => (w.id === id ? { ...w, done: true } : w))
+      );
+    } else {
+      setSaved((prev) =>
+        prev.map((w) => (w.id === id ? { ...w, done: true } : w))
+      );
+    }
     showToast("Marked as done");
   }
 

@@ -81,9 +81,9 @@ export default function PlanCard({
           View Details
         </Link>
 
-        {tab === "plan" && !item.done && (
+                {!item.done && (
           <button
-            onClick={() => markAsDone(item.id)}
+            onClick={() => markAsDone(item.id, tab)}
             className="flex items-center gap-1 bg-[var(--accent)] text-black text-xs font-semibold px-3 py-2 rounded-lg hover:brightness-95 transition whitespace-nowrap"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>

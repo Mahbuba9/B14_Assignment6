@@ -30,9 +30,9 @@ export default function MyPlanPage() {
     return (a[sortKey] as number) - (b[sortKey] as number);
   });
 
-  const totalExercises = plan.length;
-  const totalMinutes = plan.reduce((sum, w) => sum + w.duration, 0);
-  const totalCalories = plan.reduce((sum, w) => sum + w.caloriesBurned, 0);
+    const totalExercises = activeList.length;
+    const totalMinutes = activeList.reduce((sum, w) => sum + w.duration, 0);
+    const totalCalories = activeList.reduce((sum, w) => sum + w.caloriesBurned, 0);
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-8">
