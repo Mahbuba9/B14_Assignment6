@@ -14,12 +14,24 @@ export default function PlanCard({
   const { removeFromPlan, removeFromSaved, markAsDone } = usePlan();
 
   return (
-    <div className="flex items-center gap-4 bg-[var(--panel)] border border-[var(--border)] rounded-xl p-4">
-      <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-        <Image src={item.image} alt={item.name} fill className="object-cover" />
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-[var(--panel)] border border-[var(--border)] rounded-xl p-4">
+      <div className="flex items-center gap-4">
+        <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+          <Image src={item.image} alt={item.name} fill className="object-cover" />
+        </div>
+
+        <div className="flex-1 min-w-0 sm:hidden">
+          <h3 className="font-display font-semibold uppercase text-sm mb-0.5 truncate">
+            {item.name}
+            {item.done && (
+              <span className="ml-2 text-[var(--accent)] text-xs">✓ Done</span>
+            )}
+          </h3>
+          <p className="text-[var(--muted)] text-xs truncate">{item.equipment}</p>
+        </div>
       </div>
 
-      <div className="flex-1 min-w-0">
+      <div className="hidden sm:block flex-1 min-w-0">
         <h3 className="font-display font-semibold uppercase text-sm mb-0.5 truncate">
           {item.name}
           {item.done && (
@@ -45,7 +57,23 @@ export default function PlanCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      {/* Stats row - mobile only, full width below thumbnail+title */}
+      <div className="flex sm:hidden items-center gap-3 text-xs text-[var(--muted)]">
+        <span className="flex items-center gap-1">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          {item.duration} min
+        </span>
+        <span className="flex items-center gap-1">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>
+          {item.caloriesBurned} kcal
+        </span>
+        <span className="flex items-center gap-1">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 17 5.5 21 7.5 13.5 2 9 9 9"/></svg>
+          {item.rating}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
         <Link
           href={`/workout/${item.id}`}
           className="border border-[var(--border)] text-white text-xs font-medium px-3 py-2 rounded-lg hover:border-[#4a4a4f] transition whitespace-nowrap"
